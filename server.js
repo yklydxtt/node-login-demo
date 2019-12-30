@@ -1,6 +1,5 @@
 var http = require('http');
 var fs = require('fs');
-var qurerystring = require('querystring');
 var user = {
     guoguo:123456
 }
@@ -11,7 +10,34 @@ var server = http.createServer(function (request, response) {
         post += chunk;
     })
     request.on('end',function(){
-        post=qurerystring.parse(post);
+        if(path==='/login'){
+            post=JSON.parse(post);
+            if(user[post.username]==post.pwd){
+                response.writeHead(200, { 'Content-Type': 'application/json;charset=UTF-8' })
+                response.end(JSON.stringify({'msg':'登录成功！'}))
+            }else if(user[post.username]&&user[post.username]!==post.pwd){
+                response.writeHead(200, { 'Content-Type': 'application/json;charset=UTF-8' })
+                response.end(JSON.stringify({'msg':'用户名或密码错误'}))
+            }else{
+                response.writeHead(200, { 'Content-Type': 'application/json;charset=UTF-8' })
+                response.end(JSON.stringify({'msg':'用户不存在，请先注册'}))
+            }
+        }else if(path==='/reg'){
+            post=JSON.parse(post);
+            if(user[post.username]){
+                response.writeHead(200, { 'Content-Type': 'application/json;charset=UTF-8' })
+                response.end(JSON.stringify({'msg':'用户名已存在，换一个吧'}))
+            }else{
+                let name=post.username;
+                user[name]=post.pwd;
+                let data=JSON.stringify(user)
+                fs.writeFile('./user.js',data,(err)=>{
+                    if(err) throw err;
+                })
+                response.writeHead(200, { 'Content-Type': 'application/json;charset=UTF-8' })
+                response.end(JSON.stringify({'msg':'恭喜你！注册成功^_^'}))
+            }
+        }
     })
     if (path === '/') {
         fs.readFile('./login.html', function (err, data) {
@@ -22,13 +48,6 @@ var server = http.createServer(function (request, response) {
                 throw err;
             }
         })
-    } else if(path==='/data'){
-        if(user[post.username]===post.pwd){
-            response.writeHead(200, { 'Content-Type': 'text/plain;charset=UTF-8' })
-            response.end('登录成功')
-        }else{
-            throw err
-        }
     }
 })
 server.listen(3000);

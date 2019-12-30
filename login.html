@@ -1,36 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
 </head>
+
 <body>
     <h1>登录</h1>
-        用户名：<input type="text" id="name"><br>
-        密码：<input type="password" id="pwd"><br>
-        <input type="submit" value="登录" onclick="login()">
-        <script>
-            function login(){
-                var username = document.getElementById("name").value;
-            var pwd = document.getElementById('pwd').value;
-            var msg={};
-            msg.username=username;
-            msg.pwd=pwd;
-                var http = new XMLHttpRequest;
-                http.onreadystatechange=function(){
-                    if(http.status===200 && http.readyState===4){
-                        alert(http.responseText);
-                    }else{
-                        console.log(http.status);
+    用户名：<input type="text" id="name"><br>
+    密码：<input type="password" id="pwd"><br>
+    <input type="submit" value="登录" onclick="login()">
+    <input type="submit" value="注册" onclick="reg()">
+    <script>
+        const getJSON = function (url, msg) {
+            const promise = new Promise(function (resolve, reject) {
+                const handler = function () {
+                    if (this.readyState !== 4) {
+                        return;
                     }
-                }
-                http.open('POST','/data');
-                http.send(JSON.stringify(msg));
-                console.log(JSON.stringify(msg));
-            }
-        </script>
-        <input type="submit" value="注册">
+                    if (this.status === 200) {
+                        resolve(this.response);
+                    } else {
+                        reject(new Error(this.statusText));
+                    }
+                };
+                const client = new XMLHttpRequest();
+                client.open("POST", url);
+                client.onreadystatechange = handler;
+                client.responseType = "json";
+                client.setRequestHeader("Accept", "application/json");
+                client.send(JSON.stringify(msg));
+
+            });
+
+            return promise;
+        };
+        function login() {
+            var username = document.getElementById("name").value;
+            var pwd = document.getElementById('pwd').value;
+            var msg = {};
+            msg.username = username;
+            msg.pwd = pwd;
+            getJSON("/login",msg).then(function (json) {
+                alert(json.msg);
+            }, function (error) {
+                console.error('出错了', error);
+            });
+        }
+        const reg=()=>{
+            var username = document.getElementById("name").value;
+            var pwd = document.getElementById('pwd').value;
+            var msg = {};
+            msg.username = username;
+            msg.pwd = pwd;
+            getJSON("/reg",msg).then(function (json) {
+                alert(json.msg);
+            }, function (error) {
+                console.error('出错了', error);
+            });
+        }
+    </script>
 </body>
+
 </html>
