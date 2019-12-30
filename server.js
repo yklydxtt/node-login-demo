@@ -1,8 +1,6 @@
 var http = require('http');
 var fs = require('fs');
-var user = {
-    guoguo:123456
-}
+var user=require('./user.json');
 var server = http.createServer(function (request, response) {
     var path = request.url;
     var post = '';
@@ -31,7 +29,7 @@ var server = http.createServer(function (request, response) {
                 let name=post.username;
                 user[name]=post.pwd;
                 let data=JSON.stringify(user)
-                fs.writeFile('./user.js',data,(err)=>{
+                fs.writeFile('./user.json',data,(err)=>{
                     if(err) throw err;
                 })
                 response.writeHead(200, { 'Content-Type': 'application/json;charset=UTF-8' })
