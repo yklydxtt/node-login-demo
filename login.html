@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h1>登录</h1>
+        用户名：<input type="text" id="name"><br>
+        密码：<input type="password" id="pwd"><br>
+        <input type="submit" value="登录" onclick="login()">
+        <script>
+            function login(){
+                var username = document.getElementById("name").value;
+            var pwd = document.getElementById('pwd').value;
+            var msg={};
+            msg.username=username;
+            msg.pwd=pwd;
+                var http = new XMLHttpRequest;
+                http.onreadystatechange=function(){
+                    if(http.status===200 && http.readyState===4){
+                        alert(http.responseText);
+                    }else{
+                        console.log(http.status);
+                    }
+                }
+                http.open('POST','/data');
+                http.send(JSON.stringify(msg));
+                console.log(JSON.stringify(msg));
+            }
+        </script>
+        <input type="submit" value="注册">
+</body>
+</html>
